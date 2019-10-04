@@ -25,7 +25,7 @@ const expressConfiguration = {
 						logger.req(req, "SUCCESS", body);
 						res.status(200);
 						res.json({
-							result: true,
+							result: 'success',
 							message: message,
 							data: body
 						});
