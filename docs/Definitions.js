@@ -17,22 +17,26 @@ const Definitions = {
 	},
 
 	CreatePermissionRequest: {
-		"userId":"5d96dc2c6da3ce23240a6c93",
 		"videos": [
 			"5d96dad050370b13d02521a1",
 			"5d95ac891db52e0338c149ca"
 		],
-		"validUntil": "2019-10-12T05:44:12.873Z"
-		
+		"reason": "Limited internet access"
 	},
 	
 	UpdatePermissionRequest: {
-		"userId":"5d96dc2c6da3ce23240a6c93",
 		"videos": [
 			"5d96dad050370b13d02521a1"
 		],
 		"validUntil": "2019-10-20T05:44:12.873Z",
 		"isArchive": false
+	},
+
+	PermissionApproval: {
+		"permissionId": "5d9773fa4628f222a402e659",
+		"status": "Approved",
+		"remarks": "Okay Approved!",
+		"validUntil": "2019-10-07T16:41:17.297Z"
 	},
 
 	CreateUserRequest: {
@@ -56,8 +60,10 @@ const Definitions = {
 	},
 
 	CreateVideoRequest: {
-		"subjectId":"5d8e636070edb900172dd136",
+		"title": "The Bird and the Worm",
+		"category": "Eating Habits",
 		"description": "Sample Video 619",
+		"tags": "wildlife, eating",
 		"videoUrl": "https://www.youtube.com/zzsWsd1xC",
 		"visibleUntil": "2019-10-20T08:08:41.054Z"
 	},
@@ -68,6 +74,13 @@ const Definitions = {
 		"description": "Sample Video 5",
 		"videoUrl": "https://www.youtube.com/14Wzda32222s",
 		"visibleUntil": "2019-10-10T08:08:41.054Z"
+	},
+
+	PermissionApproval: {
+		"permissionId": "5d9773fa4628f222a402e659",
+		"status": "Approved",
+		"remarks": "Okay Approved!",
+		"validUntil": "2019-10-07T16:41:17.297Z"
 	},
 
 	"500": {

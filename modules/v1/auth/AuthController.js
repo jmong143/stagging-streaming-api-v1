@@ -7,6 +7,7 @@ const config = require(process.cwd()+'/config');
 
 /* Model */
 const User = require(process.cwd()+'/models/User');
+const UserProfile = require(process.cwd()+'/models/UserProfile');
 
 /* Services */
 const Auth = require(process.cwd()+'/services/auth');
@@ -20,12 +21,12 @@ const AuthController = {
 		let hash, user, token
 		let expiry = config.token.expiry;
 		let clientSecret = req.headers['x-client-secret'];
-
 		try {
 			user = await User.findOne({ email: req.body.email });
 			if (!user) 
 				throw new Error('Username/Password incorrect.');
 
+			let profile = await UserProfile.findOne({ userId: user._id });
 			hash = await bcrypt.compare(req.body.password, user.password || '');	
 			if (!hash)
 				throw new Error('Password is incorrect.')
@@ -50,6 +51,7 @@ const AuthController = {
 					createdAt: user.createdAt,
 					updatedAt: user.updatedAt
 				}, 
+				profile: profile,
 				token: token,
 				expiresIn: new Date(Date.now()+(expiry*1000))
 			});
@@ -110,6 +112,26 @@ const AuthController = {
 		} catch(e) {
 			res.error('Failed to reset password', e.message, 400);
 		}
+	},
+
+	validateToken: async (req, res, next) => {
+		try{
+			let currentUser = await Auth.getCurrentUser(req);
+			await Auth.validateToken(currentUser);
+			res.ok('Token is Valid', { validation: true });
+		} catch(e) {
+			res.error('Unauthorized', e.message);
+		} 
+	},	
+
+	validateAdminToken: async (req, res, next) => {
+		try{
+			let currentUser = await Auth.getCurrentUser(req);
+			await Auth.validateAdminToken(currentUser);
+			res.ok('Token is Valid', { validation: true });
+		} catch(e) {
+			res.error('Unauthorized', e.message);
+		} 
 	}
 }
 

@@ -6,19 +6,12 @@ const router = {
 	endpoints: [
 		{
 			method: 'GET',
-			path: '/subjects/:subjectId',
-			description: 'Get videos by subjectId',
+			path: '/',
+			description: 'Get all videos',
 			consumes: ["application/json"],
 			produces: ["application/json"],
-			parameters: [
-				{
-					name: "Subject Id",
-					required: true,
-					in: "path",
-					type: "string"
-				}
-			],	
-			handler: VideoController.getBySubject
+			parameters: [],	
+			handler: VideoController.getAll
 		},
 		{
 			method: 'GET',

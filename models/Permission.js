@@ -24,6 +24,21 @@ const Permission = {
 			type: Array,
 			required: true
 		},
+		reason: {
+			name: 'Reason',
+			type: String,
+			required: true
+		},
+		status: {
+			name: 'Status',
+			type: String,
+			required: true
+		},
+		remarks: {
+			name: 'Remarks',
+			type: String,
+			required: false
+		},
 		createdAt: {
 			name: 'CreatedAt',
 			type: Date,
@@ -37,7 +52,7 @@ const Permission = {
 		validUntil: {
 			name: 'ValidUntil',
 			type: Date,
-			required: true
+			required: false
 		},
 		isArchive: {
 			name: 'IsArchive',

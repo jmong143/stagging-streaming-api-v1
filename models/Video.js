@@ -9,8 +9,8 @@ const Video = {
 			type: mongoose.Schema.Types.ObjectId,
 			required: true
 		},
-		subjectId: {
-			name: 'SubjectId',
+		title: {
+			name: 'Title',
 			type: String,
 			required: true
 		},
@@ -19,10 +19,25 @@ const Video = {
 			type: String,
 			required: true
 		},
+		category: {
+			name: 'Category',
+			type: String,
+			required: true
+		},
+		tags: {
+			name: 'Tags',
+			type: String,
+			required: false
+		},
 		videoUrl: {
 			name: 'VideoUrl',
 			type: String,
 			required: true
+		},
+		imageUrl: {
+			name: 'Thumbnail',
+			type: String,
+			required: false
 		},
 		createdAt: {
 			name: 'CreatedAt',

@@ -47,13 +47,12 @@ const PermissionController = {
 	},
 
 	createPermission: async (req, res, next) => {
-		let permission, savePermission, user, videos;
+		let permission, savePermission, videos;
 		try {
-			// Validate Admin User
-			let currentUser = await Auth.getCurrentUser(req);
-			await Auth.validateAdminToken(currentUser);
+			// Validate User
+			let user = await Auth.getCurrentUser(req);
+			await Auth.validateToken(user);
 
-			user = await User.findOne({ _id: req.body.userId });
 			// videos = await Video.find({ _id: { $in: req.body.videos }});
 			permission = new Permission({
 				_id: new mongoose.Types.ObjectId(),
@@ -65,19 +64,46 @@ const PermissionController = {
 				},
 				// videos: videos,
 				videos: req.body.videos,
+				reason: req.body.reason || '',
+				status: 'Pending',
+				remarks: '',
 				createdAt: Date.now(),
 				updatedAt: Date.now(),
-				validUntil: req.body.validUntil,
+				validUntil: '',
 				isArchive: false
 			});
 
 			savePermission = await permission.save();
-			res.ok(`Special video permission for ${user.firstName} ${user.lastName} has been created.`, savePermission);
+			res.ok(`Request for permission has been submitted.`, savePermission);
 
 		} catch(e) {
-			res.error('Special permission creation failed.', e.message);
+			res.error('Request for permission failed.', e.message);
 		}
 	},
+
+	approvePermission: async (req, res, next) => {
+		let permission, updatePermission;		
+		try {
+			let currentUser = await Auth.getCurrentUser(req);
+			await Auth.validateAdminToken(currentUser);
+
+			if (req.body.status != 'Approved' && req.body.status != 'Rejected')
+				throw new Error('Invalid status. <Rejected, Approved>');
+
+			permission = await Permission.findOne({ _id: req.body.permissionId });
+			updatePermission = await Permission.findOneAndUpdate(
+				{ _id: permission._id },
+				{ $set: req.body },
+				{ new: true }
+			);
+
+			res.ok(`Request successfully ${req.body.status}.`, updatePermission);
+		} catch(e) {
+			res.error('Failed to approve/reject permission request', e.message);
+		}
+
+	},
+
 	updatePermission: async (req, res, next) => {
 		let permission, updatePermission;
 		try {
@@ -100,6 +126,7 @@ const PermissionController = {
 			res.error('Failed to update permission', e.message);
 		}
 	},
+
 	archivePermission: async (req, res, next) => {
 		let permission, archivePermission
 		try {

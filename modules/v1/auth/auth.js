@@ -5,6 +5,24 @@ const router = {
 	tags: 'Authentication APIs',
 	endpoints: [
 		{
+			method: 'GET',
+			path: '/validate',
+			description: 'Login',
+			consumes: ["application/json"],
+			produces: ["application/json"],/* Endpoint Params - Query / Path / Body */
+			parameters: [],
+			handler: AuthController.validateToken
+		},
+		{
+			method: 'GET',
+			path: '/admin/validate',
+			description: 'Login',
+			consumes: ["application/json"],
+			produces: ["application/json"],/* Endpoint Params - Query / Path / Body */
+			parameters: [],
+			handler: AuthController.validateAdminToken
+		},
+		{
 			method: 'POST',
 			path: '/login',
 			description: 'Login',

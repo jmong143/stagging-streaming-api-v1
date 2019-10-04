@@ -3,28 +3,19 @@
 const mongoose = require('mongoose');
 
 const Video = require(process.cwd()+'/models/Video');
-const Subject = require(process.cwd()+'/models/Subject');
+const Category = require(process.cwd()+'/models/Category');
 
 const Auth = require(process.cwd()+'/services/auth');
 
 const VideoController = {
-	getBySubject: async (req, res, next) => {
-		let subject, videos;		
+	
+	getAll: async (req, res, next) => {
+		let videos;
 		try {
-			// Validate Subject
-			subject = await Subject.findOne({ _id: req.params.subjectId });
-			if(!subject)
-				throw new Error('Subject does not exist.');
-
-			videos = await Video.find({ subjectId: req.params.subjectId },
-				{
-					__v: 0
-				}
-			).sort({ createdAt: -1 });
-
-			res.ok(`Successfully get list of videos for ${subject.name}`, videos);
-		} catch(e) {
-			res.error(`Failed to get list of videos.`, e.message);
+			videos = await Video.find().sort({ createdAt: -1 });
+			res.ok('Successfully get all videos', videos);
+		} catch (e) {
+			res.error('Failed to get list of videos', e.message);
 		}
 	},
 
@@ -41,13 +32,20 @@ const VideoController = {
 	},
 
 	createVideo: async (req, res, next) => {
-		let newVideo, subject, saveVideo;
+		let newVideo, category, saveVideo, newCategory, saveCategory;
 
-		subject = await Subject.findOne({ _id: req.body.subjectId });
+		category = await Category.findOne({ name: req.body.category });
 
 		try {
-			if(!subject)
-				throw new Error('Subject not found.');
+			if(!category) {
+				newCategory = new Category({
+					_id: new mongoose.Types.ObjectId(),
+					name: req.body.category,
+					createdAt: Date.now()
+				});
+			
+				saveCategory = await newCategory.save();
+			}
 
 			// Validate Admin User
 			let currentUser = await Auth.getCurrentUser(req);
@@ -55,8 +53,10 @@ const VideoController = {
 
 			newVideo = new Video({
 				_id: new mongoose.Types.ObjectId(),
-				subjectId: req.body.subjectId,
+				title: req.body.title,
 				description: req.body.description,
+				category: req.body.category,
+				tags: req.body.tags || '',
 				videoUrl: req.body.videoUrl,
 				createdAt: Date.now(),
 				updadtedAt: Date.now(),
@@ -85,7 +85,7 @@ const VideoController = {
 			video = await Video.findOne({ _id: req.params.videoId });
 			updateVideo = await Video.findOneAndUpdate(
 				{ _id: video._id },
-				{$set: req.body },
+				{ $set: req.body },
 				{ new: true}
 			);
 			res.ok('Video details successfully updated.', updateVideo);

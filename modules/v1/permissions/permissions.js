@@ -31,7 +31,7 @@ const router = {
 		{
 			method: 'POST',
 			path: '/',
-			description: 'Create new permissions',
+			description: 'Request video viewing permissions',
 			consumes: ["application/json"],
 			produces: ["application/json"],
 				parameters: [
@@ -45,6 +45,24 @@ const router = {
 				}
 			],
 			handler: PermissionController.createPermission
+		},
+		{
+			method: 'POST',
+			path: '/approval',
+			description: 'Approval of permission requests',
+			consumes: ["application/json"],
+			produces: ["application/json"],
+				parameters: [
+				{
+					name: "Request Body",
+					required: true,
+					in: "body",
+					schema: {
+						"$ref": "#/definitions/PermissionApproval"
+					}
+				}
+			],
+			handler: PermissionController.approvePermission
 		},
 		{
 			method: 'PUT',

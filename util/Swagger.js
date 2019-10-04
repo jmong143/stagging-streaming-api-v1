@@ -59,15 +59,18 @@ const Swagger = {
 		// Generate definitions
 		let definitions = Swagger.generateDefinitions(Definitions);
 
+		// Host
+		let host = '';
+		config.server.host.indexOf('.com') == -1 ? host = config.server.host+':'+config.server.port: host = config.server.host;
 		let swaggerDocument = {
 			"swagger": "2.0",
 	    	"info": {
 		        "description": config.server.appname,
 		        "version": config.server.version,
-		        "title": config.server.appname+ ' API'
+		        "title": config.server.appname + ' API'
 	    	},
-		    "host": "",
-		    "basePath": config.server.host+':'+config.server.port || "",
+		    "host": host,
+		    "basePath": '',
 		    "schemes": [
 		        "http"
 		    ],
