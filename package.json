@@ -4,8 +4,8 @@
   "description": "YUE - Boilerplate v2",
   "main": "app.js",
   "scripts": {
-    "test": "app.js",
-    "start": "app.js"
+    "test": "node app",
+    "start": "node app"
   },
   "author": "bulawanjp",
   "license": "ISC",
