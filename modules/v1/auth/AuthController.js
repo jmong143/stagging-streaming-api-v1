@@ -19,12 +19,22 @@ const AuthController = {
 
 	login: async (req, res) => {
 		let hash, user, token
+		let accountExpiriy = config.account.expiry; //In Months
 		let expiry = config.token.expiry;
 		let clientSecret = req.headers['x-client-secret'];
 		try {
-			user = await User.findOne({ email: req.body.email });
+			user = await User.findOne({ email: req.body.email }, { __v: 0 });
 			if (!user) 
 				throw new Error('Username/Password incorrect.');
+
+			// First Time Login account expiry
+			if (user.isAdmin == false && !user.expiresAt ) {
+				await User.findOneAndUpdate(
+					{ _id: user._id },			// Months * 31Days * 24h & 60M * 60S * 1000ms
+					{ $set: { expiresAt: new Date(Date.now()+(accountExpiriy*31*24*60*60*1000))}},
+					{ new: true }
+				);
+			}
 
 			let profile = await UserProfile.findOne({ userId: user._id });
 			hash = await bcrypt.compare(req.body.password, user.password || '');	
@@ -40,20 +50,11 @@ const AuthController = {
 			});
 
 			res.ok('Login Successful.', { 
-				user: {
-					id: user._id,
-					email: user.email,
-					firstName: user.firstName,
-					lastName: user.lastName,
-					deactivatedAt: user.deactivatedAt,
-					isActive: user.isActive,
-					isAdmin: user.isAdmin,
-					createdAt: user.createdAt,
-					updatedAt: user.updatedAt
-				}, 
+				user: user, 
 				profile: profile,
 				token: token,
-				expiresIn: new Date(Date.now()+(expiry*1000))
+				expiresIn: new Date(Date.now()+(expiry*1000)),
+				loginTime: new Date(Date.now())
 			});
 		
 		} catch(e) {

@@ -47,6 +47,9 @@ const Config = {
 	},
 	token: {
 		expiry: process.env.TOKEN_EXPIRY
+	},
+	account: {
+		expiry: process.env.ACCOUNTS_EXPIRY
 	}
 }
 

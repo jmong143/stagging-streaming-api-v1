@@ -30,6 +30,12 @@ const User = {
 			type: String,
 			required: true
 		},
+		expiresAt: {
+			name: 'ExpiresAt',
+			type: Date,
+			required: false,
+			default: ''
+		},
 		deactivatedAt: {
 			name: 'DeactivatedAt',
 			type: Date,

@@ -85,6 +85,24 @@ const router = {
 				}
 			],
 			handler: UserController.deleteUser
+		},
+		{
+			method: 'POST',
+			path: '/profile',
+			description: 'Create/Update User profile (Token Based)',
+			consumes: ["application/json"],
+			produces: ["application/json"],
+			parameters: [
+				{
+					name: "Request Body",
+					required: true,
+					in: "body",
+					schema: {
+						"$ref": "#/definitions/UpdateUserProfile"
+					}
+				}
+			],
+			handler: UserController.updateUserProfile
 		}
 	]
 };

@@ -24,6 +24,11 @@ const Video = {
 			type: String,
 			required: true
 		},
+		subject: {
+			name: 'Subject',
+			type: String,
+			required: false
+		},
 		tags: {
 			name: 'Tags',
 			type: String,

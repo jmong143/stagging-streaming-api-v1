@@ -18,13 +18,37 @@ const UserController = {
 			await Auth.validateAdminToken(currentUser);
 			// Get List of Users
 			users = await User.aggregate([
+				{
+					$lookup: {
+						from: 'pluserprofiles',
+						localField: '_id',
+						foreignField: 'userId',
+						as: 'profile'
+					}
+				},
+				{
+					$unwind: {
+						path: '$profile',
+						"preserveNullAndEmptyArrays": true	
+					},
+				},
 				{ 
 					$project : 
 					{ 
-						__v : 0 ,
-						password: 0,
+						_id: 1,
+						email: 1,
+						firstName: 1,
+						lastName: 1,
+						school: '$profile.school' || '',
+						gender: '$profile.gender' || '',
+						birthDate: '$profile.birthDate' || '',
+						expiresAt: 1,
+						deactivatedAt: 1,
+						isArchive: 1,
+						isActive: 1,
+						isAdmin: 1
 					} 
-				} 
+				}				 
 			]).sort({createdAt: -1});
 			res.ok('Successfully get all users', users);
 		} catch (e) {
@@ -192,7 +216,38 @@ const UserController = {
 		} catch(e) {
 			res.error('Failed to archive user.', e.message);
 		}
+	},
+
+	updateUserProfile: async (req, res, next) => {
+		let user, profile, updateProfile, action;
+		let profileBody = req.body;
+		try {
+			user = await Auth.getCurrentUser(req);
+			profile = await UserProfile.findOne({ userId: user._id });
+
+
+			// Create new Profile if doesnt exist.
+			if(!profile) {
+				action = 'created';
+				profileBody._id = new mongoose.Types.ObjectId();
+				profileBody.userId = user._id;
+				let newProfile = new UserProfile(profileBody);
+				updateProfile = await newProfile.save();
+			} else {
+				action = 'updated';
+				updateProfile = await UserProfile.findOneAndUpdate(
+					{ userId: user._id},
+					{ $set: req.body },
+					{ new: true }
+				);
+			}
+
+			res.ok(`Successfully ${action} profile.`, {user: user, profile: updateProfile});
+
+		} catch(e) {
+			res.error('Failed to update User Profile', e.message);
+		}
 	}
-}
+};
 
 module.exports = UserController;

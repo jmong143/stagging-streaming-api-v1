@@ -58,6 +58,11 @@ const Definitions = {
 	    "gender": "Male",
 	    "school": "Don Bosco Technical College"
 	},
+	UpdateUserProfile: {
+		"birthDate": "1992-10-07T03:37:33.206Z",
+	    "gender": "Male",
+	    "school": "Don Bosco Technical College"
+	},
 
 	CreateVideoRequest: {
 		"title": "The Bird and the Worm",
