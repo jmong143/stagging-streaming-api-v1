@@ -56,12 +56,14 @@ const Definitions = {
 	    "isAdmin": true,
 		"birthDate": "1992-10-07T03:37:33.206Z",
 	    "gender": "Male",
-	    "school": "Don Bosco Technical College"
+	    "school": "Don Bosco Technical College",
+	    "companyName": "UBP"
 	},
 	UpdateUserProfile: {
 		"birthDate": "1992-10-07T03:37:33.206Z",
 	    "gender": "Male",
-	    "school": "Don Bosco Technical College"
+	    "school": "Don Bosco Technical College",
+	    "companyName": "UBP"
 	},
 
 	CreateVideoRequest: {

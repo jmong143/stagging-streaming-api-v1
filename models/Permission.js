@@ -19,10 +19,20 @@ const Permission = {
 			type: Object,
 			required: true
 		},
-		videos: {
-			name: 'VideoArray',
-			type: Array,
+		videoId: {
+			name: 'VideoId',
+			type: String,
 			required: true
+		},
+		videoTitle: {
+			name: 'VideoName',
+			type: String,
+			required: true
+		},
+		subject: {
+			namë: 'Subject',
+			type: String,
+			required: false
 		},
 		reason: {
 			name: 'Reason',

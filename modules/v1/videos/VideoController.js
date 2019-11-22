@@ -11,8 +11,14 @@ const VideoController = {
 	
 	getAll: async (req, res, next) => {
 		let videos;
+		let response = [];
+		let dateNow = Date.now();
 		try {
-			videos = await Video.find().sort({ createdAt: -1 });
+			videos = await Video.aggregate().sort({ createdAt: -1 });
+			videos.forEach((video) => {
+				video.status = new Date(video.visibleUntil) >= dateNow ? 'visible' : 'expired' 
+			});
+
 			res.ok('Successfully get all videos', videos);
 		} catch (e) {
 			res.error('Failed to get list of videos', e.message);

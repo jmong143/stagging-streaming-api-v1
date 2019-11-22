@@ -12,6 +12,7 @@ const Mailer = require(process.cwd()+'/services/mailer');
 const UserController = {
 	getUsers: async (req, res, next)=> {
 		let users;
+		let dateNow = Date.now();
 		try {
 			// Validate Admin User
 			let currentUser = await Auth.getCurrentUser(req);
@@ -42,6 +43,7 @@ const UserController = {
 						school: '$profile.school' || '',
 						gender: '$profile.gender' || '',
 						birthDate: '$profile.birthDate' || '',
+						companyName: '$profile.companyName' || '',
 						expiresAt: 1,
 						deactivatedAt: 1,
 						isArchive: 1,
@@ -50,6 +52,10 @@ const UserController = {
 					} 
 				}				 
 			]).sort({createdAt: -1});
+
+			users.forEach((user)=> {
+				user.status = !user.isAdmin && new Date(user.expiresAt) <= dateNow ? 'expired' : 'active'
+			});
 			res.ok('Successfully get all users', users);
 		} catch (e) {
 			res.error('Failed to get user list', e.message);
@@ -97,6 +103,7 @@ const UserController = {
 				password: hash,
 				firstName: req.body.firstName,
 				lastName: req.body.lastName,
+				expiresAt: req.body.isAdmin ? null : new Date(Date.now()+(1000*60*60*24*31*6)), 
 				isArchive: false,
 				isActive: true,
 				isAdmin: req.body.isAdmin				
@@ -158,9 +165,10 @@ const UserController = {
 				updatedAt: Date.now()
 			};
 
-			req.body.birthDate ? profileBody.birthDate = req.body.birthDate : '';
-			req.body.gender ? profileBody.gender = req.body.gender : '';
-			req.body.school ? profileBody.school = req.body.school : '';
+			req.body.hasOwnProperty('birthDate') ? profileBody.birthDate = req.body.birthDate : '';
+			req.body.hasOwnProperty('gender') ? profileBody.gender = req.body.gender : '';
+			req.body.hasOwnProperty('school') ? profileBody.school = req.body.school : '';
+			req.body.hasOwnProperty('companyName') ? profileBody.companyName = req.body.companyName : '';
 
 			updateUser = await User.findOneAndUpdate(
 				{ _id : user._id },
@@ -190,6 +198,7 @@ const UserController = {
 				birthDate: updateProfile.birthDate || '',
 				gender: updateProfile.gender || '',
 				school: updateProfile.school || '',
+				companyName: updateProfile.companyName || '',
 				updatedAt: updateUser.updatedAt,
 				deactivatedAt: updateUser.deactivatedAt,
 				isArchive: updateUser.isArchive,

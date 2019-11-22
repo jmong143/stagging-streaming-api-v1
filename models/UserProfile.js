@@ -19,6 +19,10 @@ const User = {
 			name: "School",
 			type: String
 		},
+		companyName: {
+			name: "Company",
+			type: String
+		},
 		gender: {
 			name: "Gender",
 			type: String

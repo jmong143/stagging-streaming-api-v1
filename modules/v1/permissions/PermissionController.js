@@ -20,8 +20,7 @@ const PermissionController = {
 		if (currentUser.isAdmin === false) {
 			query = { 
 				userId: currentUser._id,
-				isArchive: false,
-				validUntil: { $gte: Date.now()} 
+				isArchive: false 
 			};
 		} 
 
@@ -47,12 +46,15 @@ const PermissionController = {
 	},
 
 	createPermission: async (req, res, next) => {
-		let permission, savePermission, videos;
+		let permission, savePermission;
 		try {
 			// Validate User
 			let user = await Auth.getCurrentUser(req);
+			let video = await Video.findOne({ _id: req.body.videoId });
 			await Auth.validateToken(user);
 
+			if (!video) 
+				throw new Error ('Video does not exist.');
 			// videos = await Video.find({ _id: { $in: req.body.videos }});
 			permission = new Permission({
 				_id: new mongoose.Types.ObjectId(),
@@ -62,8 +64,10 @@ const PermissionController = {
 					lastName: user.lastName,
 					email: user.email
 				},
-				// videos: videos,
-				videos: req.body.videos,
+				videoId: video._id,
+				videoTitle: video.title,
+				videoTags: video.tags,
+				subject: video.subject || '',
 				reason: req.body.reason || '',
 				status: 'Pending',
 				remarks: '',

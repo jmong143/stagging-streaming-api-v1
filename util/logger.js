@@ -20,8 +20,12 @@ const Logger = {
 	},
 
 	req: (req, result, obj) => {
-		if(typeof obj === 'object')
+		if(typeof obj === 'object' && !Array.isArray(obj)) {
 			obj = JSON.stringify(obj);
+		} else if (Array.isArray(obj)) {
+			obj = JSON.stringify({ length: obj.length });
+		}
+		
 		let _method = colors[req.method];
 		console.log(
 			Chalk.whiteBright('['+ getDate() + ']')+
