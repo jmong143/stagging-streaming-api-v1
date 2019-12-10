@@ -12,7 +12,7 @@ const PermissionController = {
 	getPermissions: async (req, res, next) => {
 		let permissions;
 		let query = {};
-		
+		let dateNow = Date.now();
 		// Determine if admin or not. 
 		let currentUser = await Auth.getCurrentUser(req);
 
@@ -26,6 +26,12 @@ const PermissionController = {
 
 		try {
 			permissions = await Permission.find(query).sort({ createdAt: -1 });
+
+			/* BUG NOT WORKING */
+			permissions.forEach((permission)=> {
+				permission.isValid = permission.status == 'Approved' && new Date(permission.validUntil) <= dateNow ? 'aa' : 'bb';
+			});
+
 			res.ok('Successfully get permissions.', permissions);
 		} catch(e) {
 			res.error('Failed to get permissions.', e.message);
@@ -35,6 +41,7 @@ const PermissionController = {
 	getPermission: async (req, res, next) => {
 		let permission, videos;
 		try {
+
 			permission = await Permission.findOne({ _id: req.params.permissionId });
 			videos = await Video.find({ _id: { $in : permission.videos }});
 
@@ -50,6 +57,7 @@ const PermissionController = {
 		try {
 			// Validate User
 			let user = await Auth.getCurrentUser(req);
+			console.log(user);
 			let video = await Video.findOne({ _id: req.body.videoId });
 			await Auth.validateToken(user);
 

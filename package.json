@@ -4,7 +4,7 @@
   "description": "YUE - Boilerplate v2",
   "main": "app.js",
   "scripts": {
-    "test": "node app",
+    "test": "nodemon app",
     "start": "node app"
   },
   "author": "bulawanjp",

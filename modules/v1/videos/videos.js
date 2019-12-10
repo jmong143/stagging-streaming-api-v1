@@ -15,6 +15,15 @@ const router = {
 		},
 		{
 			method: 'GET',
+			path: '/front/home',
+			description: 'Get all videos by date - Front Homepage',
+			consumes: ["application/json"],
+			produces: ["application/json"],
+			parameters: [],	
+			handler: VideoController.getVideosHome
+		},
+		{
+			method: 'GET',
 			path: '/:videoId',
 			description: 'Get video details',
 			consumes: ["application/json"],
@@ -28,6 +37,22 @@ const router = {
 				}
 			],
 			handler: VideoController.getById
+		},
+		{
+			method: 'GET',
+			path: '/:videoId/view',
+			description: 'Get video details and relevant videos',
+			consumes: ["application/json"],
+			produces: ["application/json"],
+			parameters: [
+				{
+					name: "Video Id",
+					required: true,
+					in: "path",
+					type: "string"
+				}
+			],
+			handler: VideoController.frontGetById
 		},
 		{
 			method: 'POST',

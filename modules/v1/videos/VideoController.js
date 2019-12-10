@@ -10,16 +10,61 @@ const Auth = require(process.cwd()+'/services/auth');
 const VideoController = {
 	
 	getAll: async (req, res, next) => {
+		let query = [];
 		let videos;
-		let response = [];
 		let dateNow = Date.now();
+
+		req.query.keyword ? query.push({ 
+			$match:{ $or: [
+                {"subject": {'$regex': req.query.keyword, '$options' : 'i'}},
+                {"title":{'$regex': req.query.keyword, '$options' : 'i'}}
+		 	]}
+		 }): '';
+
 		try {
-			videos = await Video.aggregate().sort({ createdAt: -1 });
+			videos = await Video.aggregate(query).sort({ createdAt: -1 });
 			videos.forEach((video) => {
 				video.status = new Date(video.visibleUntil) >= dateNow ? 'visible' : 'expired' 
 			});
 
 			res.ok('Successfully get all videos', videos);
+		} catch (e) {
+			res.error('Failed to get list of videos', e.message);
+		}
+	},
+
+	getVideosHome: async (req, res, next) => {
+		let query = [];
+		let videos;
+		let response = [];
+		let dateNow = Date.now();
+		let tmpVid = {};
+
+		req.query.keyword ? query.push({ 
+			$match:{ $or: [
+                {"subject": {'$regex': req.query.keyword, '$options' : 'i'}},
+                {"title":{'$regex': req.query.keyword, '$options' : 'i'}}
+		 	]}
+		 }): '';
+
+		try {
+			videos = await Video.aggregate(query).sort({ createdAt: -1 });
+			videos.forEach((video) => {
+				video.status = new Date(video.visibleUntil) >= dateNow ? 'visible' : 'expired' 
+				/* Categorize Video Based on Dates. */
+				let strDate = JSON.stringify(video.createdAt).split('T')[0].replace('"', '');
+				!tmpVid[strDate] ? tmpVid[strDate] = [] : '';
+				tmpVid[strDate].push(video)
+			});
+
+			Object.keys(tmpVid).forEach((key)=> {
+				response.push({
+					date: key,
+					list: tmpVid[key]
+				});
+			});
+
+			res.ok('Successfully get all videos', response);
 		} catch (e) {
 			res.error('Failed to get list of videos', e.message);
 		}
@@ -32,6 +77,48 @@ const VideoController = {
 				__v: 0,
 			});
 			res.ok('Successfully get video details', video);
+		} catch(e) {
+			res.error('Failed to get video details', e.message);
+		}
+	},
+
+	/* Front get by Id */
+	frontGetById: async (req, res, next) => {
+		let video, relevantDate, relevantSubject;
+		try {
+			video = await Video.findOne({ _id: req.params.videoId }, {
+				__v: 0,
+			});
+
+			let floor = new Date(video.createdAt.setUTCHours(0, 0, 0, 0));
+			let ceil = new Date(video.createdAt.setUTCHours(23, 59, 59, 999));
+
+			relevantDate = await Video.aggregate([
+				{
+					$match: { _id: { $ne: video._id } }
+				},
+				{ 
+					$match:{ createdAt: {
+						$gte: floor,
+						$lte: ceil
+					}}
+			 	}
+			 ]);
+
+			relevantSubject = await Video.aggregate([
+				{
+					$match: { _id: { $ne: video._id } }
+				},
+				{ 
+					$match: { subject: video.subject }
+			 	}
+			 ]);
+
+			res.ok('Successfully get video details', {
+				video: video,
+				relevantByDate: relevantDate,
+				relevantBySubject: relevantSubject
+			});
 		} catch(e) {
 			res.error('Failed to get video details', e.message);
 		}
