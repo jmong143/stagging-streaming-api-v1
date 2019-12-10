@@ -19,7 +19,7 @@
     "express": "^4.17.1",
     "generate-schema": "^2.6.0",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^5.7.1",
+    "mongoose": "^5.7.5",
     "nodemailer": "^6.3.0",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
