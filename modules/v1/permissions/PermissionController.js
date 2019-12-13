@@ -15,6 +15,7 @@ const PermissionController = {
 		let dateNow = Date.now();
 		// Determine if admin or not. 
 		let currentUser = await Auth.getCurrentUser(req);
+		let response = [];
 
 		// If not admin
 		if (currentUser.isAdmin === false) {
@@ -26,10 +27,8 @@ const PermissionController = {
 
 		try {
 			permissions = await Permission.find(query).sort({ createdAt: -1 });
-
-			/* BUG NOT WORKING */
 			permissions.forEach((permission)=> {
-				permission.isValid = permission.status == 'Approved' && new Date(permission.validUntil) <= dateNow ? 'aa' : 'bb';
+				permission.isValid = permission.status == 'Approved' && permission.validUntil > Date.now() ? true : false;
 			});
 
 			res.ok('Successfully get permissions.', permissions);
@@ -102,6 +101,7 @@ const PermissionController = {
 			if (req.body.status != 'Approved' && req.body.status != 'Rejected')
 				throw new Error('Invalid status. <Rejected, Approved>');
 
+			req.body.validUntil ? '' : req.body.validUntil = new Date(Date.now()+(1000*60*60*24*7));
 			permission = await Permission.findOne({ _id: req.body.permissionId });
 			updatePermission = await Permission.findOneAndUpdate(
 				{ _id: permission._id },

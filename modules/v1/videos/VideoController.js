@@ -20,11 +20,16 @@ const VideoController = {
                 {"title":{'$regex': req.query.keyword, '$options' : 'i'}}
 		 	]}
 		 }): '';
+		let videoKeys = Object.keys(Video.schema.tree);
 
 		try {
 			videos = await Video.aggregate(query).sort({ createdAt: -1 });
 			videos.forEach((video) => {
 				video.status = new Date(video.visibleUntil) >= dateNow ? 'visible' : 'expired' 
+				/* Fill in missing fields */
+				videoKeys.forEach((key) => {
+					!video[key] && key != 'id' ? video[key] = '' : ''; 
+				});
 			});
 
 			res.ok('Successfully get all videos', videos);
@@ -39,6 +44,7 @@ const VideoController = {
 		let response = [];
 		let dateNow = Date.now();
 		let tmpVid = {};
+		let videoKeys = Object.keys(Video.schema.tree);
 
 		req.query.keyword ? query.push({ 
 			$match:{ $or: [
@@ -51,6 +57,11 @@ const VideoController = {
 			videos = await Video.aggregate(query).sort({ createdAt: -1 });
 			videos.forEach((video) => {
 				video.status = new Date(video.visibleUntil) >= dateNow ? 'visible' : 'expired' 
+				/* Fill in missing fields */
+				videoKeys.forEach((key) => {
+					!video[key] && key != 'id' ? video[key] = '' : ''; 
+				});
+
 				/* Categorize Video Based on Dates. */
 				let strDate = JSON.stringify(video.createdAt).split('T')[0].replace('"', '');
 				!tmpVid[strDate] ? tmpVid[strDate] = [] : '';

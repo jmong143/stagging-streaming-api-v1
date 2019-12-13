@@ -15,6 +15,13 @@ const UserController = {
 		let dateNow = Date.now();
 		try {
 			// Validate Admin User
+			let profileTemplate = {
+				school: '',
+				gender: '',
+				birthDate: '',
+				companyName: ''
+			};
+
 			let currentUser = await Auth.getCurrentUser(req);
 			await Auth.validateAdminToken(currentUser);
 			// Get List of Users
@@ -55,6 +62,9 @@ const UserController = {
 
 			users.forEach((user)=> {
 				user.status = !user.isAdmin && new Date(user.expiresAt) <= dateNow ? 'expired' : 'active'
+				Object.keys(profileTemplate).forEach((key)=> {
+					user[key] ? '' : user[key] = ''
+				});
 			});
 			res.ok('Successfully get all users', users);
 		} catch (e) {

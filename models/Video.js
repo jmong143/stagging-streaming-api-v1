@@ -66,7 +66,7 @@ const Video = {
 		}
 	},
 	{
-	    timestamps: true
+	    timestamps: false
 	})
 }
 

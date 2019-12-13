@@ -54,6 +54,11 @@ const Permission = {
 			type: Date,
 			required: true
 		},
+		isValid: {
+			name: 'isValid',
+			type: Boolean,
+			default: false
+		},
 		updatedAt: {
 			name: 'UpdatedAt',
 			type: Date,
