@@ -9,6 +9,11 @@ const Video = {
 			type: mongoose.Schema.Types.ObjectId,
 			required: true
 		},
+		youtubeId: {
+			name : 'YTId',
+			type: String,
+			required: true
+		},
 		title: {
 			name: 'Title',
 			type: String,

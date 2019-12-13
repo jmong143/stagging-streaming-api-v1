@@ -97,8 +97,14 @@ const VideoController = {
 	frontGetById: async (req, res, next) => {
 		let video, relevantDate, relevantSubject;
 		try {
+
+			let videoKeys = Object.keys(Video.schema.tree);
 			video = await Video.findOne({ _id: req.params.videoId }, {
 				__v: 0,
+			});
+
+			videoKeys.forEach((key) => {
+				!video[key] && key != 'id' ? video[key] = '' : ''; 
 			});
 
 			let floor = new Date(video.createdAt.setUTCHours(0, 0, 0, 0));
@@ -116,6 +122,12 @@ const VideoController = {
 			 	}
 			 ]);
 
+			relevantDate.forEach((dateVids)=> {
+				videoKeys.forEach((key) => {
+					!dateVids[key] && key != 'id' ? dateVids[key] = '' : ''; 
+				});
+			});
+
 			relevantSubject = await Video.aggregate([
 				{
 					$match: { _id: { $ne: video._id } }
@@ -124,6 +136,12 @@ const VideoController = {
 					$match: { subject: video.subject }
 			 	}
 			 ]);
+
+			relevantSubject.forEach((subVids) => {
+				videoKeys.forEach((key) => {
+					!subVids[key] && key != 'id' ? subVids[key] = '' : ''; 
+				});
+			});
 
 			res.ok('Successfully get video details', {
 				video: video,
