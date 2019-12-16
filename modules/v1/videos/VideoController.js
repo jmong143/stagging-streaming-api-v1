@@ -175,7 +175,9 @@ const VideoController = {
 
 			newVideo = new Video({
 				_id: new mongoose.Types.ObjectId(),
+				youtubeId: req.body.videoUrl.split('?v=')[1] || '',
 				title: req.body.title,
+				duration: req.body.duration || '',
 				description: req.body.description,
 				subject: req.body.subject,
 				category: req.body.category,

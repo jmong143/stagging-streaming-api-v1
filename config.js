@@ -36,7 +36,8 @@ const Config = {
 		clientSecret: process.env.GOOGLE_CLIENT_SECRET,
 		grantType: process.env.GOOGLE_GRANT_TYPE,
 		redirectUrl: process.env.GOOGLE_REDIRECT_URL,
-		refreshToken: process.env.GOOGLE_REFRESH_TOKEN
+		refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
+		api: process.env.GOOGLE_APIS_URL
 	},
 	defaultAdminUser: {
 		email: process.env.DEFAULT_ADMIN_USER,
@@ -50,6 +51,9 @@ const Config = {
 	},
 	account: {
 		expiry: process.env.ACCOUNTS_EXPIRY
+	},
+	cron: {
+		interval: process.env.CRON_JOB_INTERVAL
 	}
 }
 

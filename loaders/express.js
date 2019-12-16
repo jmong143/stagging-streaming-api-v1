@@ -1,4 +1,5 @@
 'use strict';
+
 const config = require(process.cwd()+'/config');
 
 const cookieParser = require('cookie-parser');

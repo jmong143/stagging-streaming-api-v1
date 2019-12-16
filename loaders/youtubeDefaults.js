@@ -1,11 +1,14 @@
+'use strict';
+
 const mongoose = require('mongoose');
 
 const YoutubeToken = require(process.cwd()+'/models/YoutubeToken');
 
+const Youtube = require(process.cwd()+'/services/youtube');
 const Config = require(process.cwd()+'/config');
 const logger = require(process.cwd()+'/util/logger');
 
-const TAG = '[YOUTUBE][DEFAULTS]';
+const TAG = '[YOUTUBE]';
 
 const defaults = {
 	init: async (app) => {
@@ -24,14 +27,23 @@ const defaults = {
 				});
 
 				await newToken.save();
-				logger.sys(TAG, 'YoutubeToken has been created.');
+				logger.sys(TAG+'[AUTH]', 'YoutubeToken has been created.');
 			} else {
-				logger.sys(TAG, 'Youtube token exists.');
+				logger.sys(TAG+'[AUTH]', 'Youtube token exists.');
 			}
-			return true
+
+			/* Update Durations on startup */
+			logger.sys(TAG+'[PLAYLIST]', 'Updatng Playlist.')
+		 	await Youtube.updateIds().then((result) =>{
+				Youtube.updateDurations();
+			}).then((result)=>{
+				logger.sys(TAG+'[PLAYLIST]', `Playlist Updated.`);
+			});
+
+			return ({ youtube: true })
 		} catch(e) {
 			console.log(e);
-			return false
+			return ({ youtube: false })
 		}
 	}
 };

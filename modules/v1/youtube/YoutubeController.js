@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const YoutubeToken = require(process.cwd()+'/models/YoutubeToken');
 const youtube = require(process.cwd()+'/services/youtube');
 const Auth = require(process.cwd()+'/services/auth');
+const Videos = require(process.cwd()+'/models/Video');
 
 const YoutubeController = {
 	refreshToken: async (req,res,next)=> {
@@ -33,6 +34,37 @@ const YoutubeController = {
 			});
 		} catch(e) {
 			res.error('failed to refresh token', e.message);
+		}
+	},
+
+	getDetails: async (req, res, next) => {
+		
+		let videos, ytResponse;
+		let ids = [];
+		try {
+			videos = await Videos.find();
+			videos.forEach((video) => {
+				ids.push(video.videoUrl.split('?v=')[1]);
+			});
+
+			ytResponse = await youtube.getVideosDetail(ids);
+
+			res.ok('Successfully get video details from youtube', ytResponse);
+
+		} catch(e) {
+			res.error('Failed to get video details.', e.message);
+		}
+	},
+
+	updatePlaylist: async (req, res, next) => {
+		let results = [];
+		try {
+			await youtube.updateIds().then((s)=> {
+				youtube.updateDurations();
+			});
+			res.ok('Successfully updated all videos.', {});
+		} catch(e) {
+			res.error('Failed to update video details', e.message);
 		}
 	}
 }

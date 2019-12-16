@@ -12,12 +12,17 @@ const Video = {
 		youtubeId: {
 			name : 'YTId',
 			type: String,
-			required: true
+			required: false
 		},
 		title: {
 			name: 'Title',
 			type: String,
 			required: true
+		},
+		duration: {
+			name: 'Duration',
+			type: String,
+			required: false
 		},
 		description: {
 			name: 'Description',
