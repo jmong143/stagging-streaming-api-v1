@@ -42,6 +42,8 @@ const YoutubeController = {
 		let videos, ytResponse;
 		let ids = [];
 		try {
+			let currentUser = await Auth.getCurrentUser(req);
+			await Auth.validateAdminToken(currentUser);
 			videos = await Videos.find();
 			videos.forEach((video) => {
 				ids.push(video.videoUrl.split('?v=')[1]);
@@ -59,6 +61,8 @@ const YoutubeController = {
 	updatePlaylist: async (req, res, next) => {
 		let results = [];
 		try {
+			let currentUser = await Auth.getCurrentUser(req);
+			await Auth.validateAdminToken(currentUser);
 			await youtube.updateIds().then((s)=> {
 				youtube.updateDurations();
 			});

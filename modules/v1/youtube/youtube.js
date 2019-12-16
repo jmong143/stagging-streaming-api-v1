@@ -7,7 +7,7 @@ const router = {
 		{
 			method: 'GET',
 			path: '/tokens/refresh',
-			description: 'Refresh token - Youtue',
+			description: 'Refresh token - Youtube',
 			consumes: ["application/json"],
 			produces: ["application/json"],
 			handler: YoutubeController.refreshToken
@@ -15,7 +15,7 @@ const router = {
 		{
 			method: 'GET',
 			path: '/videos',
-			description: 'Get Video Details from Youtue',
+			description: 'Get Video Details from Youtube',
 			consumes: ["application/json"],
 			produces: ["application/json"],
 			handler: YoutubeController.getDetails
