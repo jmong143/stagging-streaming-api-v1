@@ -30,6 +30,11 @@ const User = {
 			type: String,
 			required: true
 		},
+		contactNumber: {
+			name: "ContactNumber",
+			type: String,
+			required: false
+		},
 		expiresAt: {
 			name: 'ExpiresAt',
 			type: Date,

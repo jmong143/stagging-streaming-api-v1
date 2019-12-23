@@ -47,6 +47,7 @@ const UserController = {
 						email: 1,
 						firstName: 1,
 						lastName: 1,
+						contactNumber: 1,
 						school: '$profile.school' || '',
 						gender: '$profile.gender' || '',
 						birthDate: '$profile.birthDate' || '',
@@ -113,9 +114,10 @@ const UserController = {
 				password: hash,
 				firstName: req.body.firstName,
 				lastName: req.body.lastName,
+				contactNumber: req.body.contactNumber,
 				expiresAt: req.body.isAdmin ? null : new Date(Date.now()+(1000*60*60*24*31*6)), 
 				isArchive: false,
-				isActive: true,
+				isActive: true, // Set on first Time Login
 				isAdmin: req.body.isAdmin				
 			});
 
@@ -159,6 +161,7 @@ const UserController = {
 			req.body.firstName ? userBody.firstName = req.body.firstName : '';
 			req.body.lastName ? userBody.lastName = req.body.lastName : '';
 			req.body.isActive ? userBody.isActive = req.body.isActive : '';
+			req.body.contactNumber ? userBody.contactNumber = req.body.contactNumber : '';
 			req.body.hasOwnProperty('isArchive') ? userBody.isArchive = req.body.isArchive : '';
 
 			if(req.body.isActive = false )
@@ -205,6 +208,7 @@ const UserController = {
 				email: updateUser.email,
 				firstName: updateUser.firstName,
 				lastName: updateUser.lastName,
+				contactNumber: updateUser.contactNumber,
 				birthDate: updateProfile.birthDate || '',
 				gender: updateProfile.gender || '',
 				school: updateProfile.school || '',
