@@ -73,6 +73,10 @@ const Video = {
 			name: 'IsArchive',
 			type: Boolean,
 			default: false
+		},
+		status: {
+			name: 'Status',
+			type: String,
 		}
 	},
 	{

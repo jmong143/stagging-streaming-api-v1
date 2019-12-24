@@ -5,6 +5,8 @@ const mongoose = require('mongoose');
 const Video = require(process.cwd()+'/models/Video');
 const Category = require(process.cwd()+'/models/Category');
 
+/* Services */
+const PermissionService = require(process.cwd()+'/services/permissions');
 const Auth = require(process.cwd()+'/services/auth');
 
 const VideoController = {
@@ -32,7 +34,7 @@ const VideoController = {
 				});
 			});
 
-			res.ok('Successfully get all videos', videos);
+			res.ok('Successfully get all videos', await PermissionService.apply(videos, req));
 		} catch (e) {
 			res.error('Failed to get list of videos', e.message);
 		}
@@ -55,6 +57,7 @@ const VideoController = {
 
 		try {
 			videos = await Video.aggregate(query).sort({ createdAt: -1 });
+
 			videos.forEach((video) => {
 				video.status = new Date(video.visibleUntil) >= dateNow ? 'visible' : 'expired' 
 				/* Fill in missing fields */
@@ -71,11 +74,11 @@ const VideoController = {
 			Object.keys(tmpVid).forEach((key)=> {
 				response.push({
 					date: key,
-					list: tmpVid[key]
+					list:tmpVid[key]
 				});
 			});
 
-			res.ok('Successfully get all videos', response);
+			res.ok('Successfully get all videos', await PermissionService.applyMany(response, req));
 		} catch (e) {
 			res.error('Failed to get list of videos', e.message);
 		}
@@ -95,13 +98,13 @@ const VideoController = {
 
 	/* Front get by Id */
 	frontGetById: async (req, res, next) => {
-		let video, relevantDate, relevantSubject;
+		let video = {}, relevantDate, relevantSubject;
+		let dateNow = Date.now();
 		try {
 
 			let videoKeys = Object.keys(Video.schema.tree);
-			video = await Video.findOne({ _id: req.params.videoId }, {
-				__v: 0,
-			});
+			video = await Video.findOne({ _id: req.params.videoId });	
+			video.status = new Date(video.visibleUntil) >= dateNow ? 'visible' : 'expired';
 
 			videoKeys.forEach((key) => {
 				!video[key] && key != 'id' ? video[key] = '' : ''; 
@@ -124,7 +127,8 @@ const VideoController = {
 
 			relevantDate.forEach((dateVids)=> {
 				videoKeys.forEach((key) => {
-					!dateVids[key] && key != 'id' ? dateVids[key] = '' : ''; 
+					!dateVids[key] && key != 'id' ? dateVids[key] = '' : '';		
+					dateVids.status = new Date(dateVids.visibleUntil) >= dateNow ? 'visible' : 'expired'   
 				});
 			});
 
@@ -139,14 +143,17 @@ const VideoController = {
 
 			relevantSubject.forEach((subVids) => {
 				videoKeys.forEach((key) => {
-					!subVids[key] && key != 'id' ? subVids[key] = '' : ''; 
+					!subVids[key] && key != 'id' ? subVids[key] = '' : '';
+					subVids.status = new Date(subVids.visibleUntil) >= dateNow ? 'visible' : 'expired'  
 				});
 			});
 
+			/* Video */
+
 			res.ok('Successfully get video details', {
-				video: video,
-				relevantByDate: relevantDate,
-				relevantBySubject: relevantSubject
+				video: await PermissionService.applySingle(video, req),
+				relevantByDate: await PermissionService.apply(relevantDate, req),
+				relevantBySubject: await PermissionService.apply(relevantSubject, req)
 			});
 		} catch(e) {
 			res.error('Failed to get video details', e.message);

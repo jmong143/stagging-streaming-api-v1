@@ -11,7 +11,7 @@ const Permission = {
 		},
 		userId: {
 			name: 'UserId',
-			type: String,
+			type: mongoose.Schema.Types.ObjectId,
 			required: true
 		},
 		user: {

@@ -33,7 +33,7 @@ const updatePlaylist = () => {
 };
 
 const intervals = {
-	'HOURLY': 	"* 59 * * * *",
+	'HOURLY': 	"00 59 * * * *",
 	'DAILY': 	"* * 23 * * *",
 	'WEEKLY': 	"* * * * * 6",
 	'MONTHLY': 	"* * * 1 * *"
